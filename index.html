@@ -337,9 +337,12 @@
       const organicEff = nutrientProduct === "fermaidO" && !isMeadTosna
         ? (effOverride === "" ? ORGANIC_N_EFFICIENCY : Number(effOverride))
         : 1;
-      const totalNutrientG = isMeadTosna
-        ? tosnaFermaidO(brix, strain.nFactor, volume)
-        : (deficit * volume) / (factor * organicEff);
+      const totalNutrientG = Math.max(
+        isMeadTosna
+          ? tosnaFermaidO(brix, strain.nFactor, volume)
+          : (deficit * volume) / (factor * organicEff),
+        0
+      );
 
       const bentoniteG = BENTONITE_RATE[type] * volume;
 

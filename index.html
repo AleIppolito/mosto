@@ -343,7 +343,8 @@
 
       const bentoniteG = BENTONITE_RATE[type] * volume;
 
-      const so2Ppm = so2Target(ph, MOLECULAR_SO2[type]);
+      const phNum = ph === "" ? 0 : ph;
+      const so2Ppm = so2Target(phNum, MOLECULAR_SO2[type]);
       const so2NeededPpm = Math.max(so2Ppm - Number(currentSO2 || 0), 0);
       const kmbsG = (so2NeededPpm * volume) / 576;
 
@@ -549,7 +550,7 @@
                       <div>
                         <Num unit="ppm">{so2Ppm.toFixed(0)}</Num>
                         <div style={{ fontSize: 12, marginTop: 2, color: "#9C9184" }}>
-                          target SO2 libera a pH {ph.toFixed(1)} · {MOLECULAR_SO2[type]} ppm molecolare
+                          target SO2 libera a pH {phNum.toFixed(1)} · {MOLECULAR_SO2[type]} ppm molecolare
                         </div>
                       </div>
                     </div>

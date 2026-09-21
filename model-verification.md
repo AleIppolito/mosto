@@ -213,7 +213,7 @@ App 20–35 g/hL brackets Scott's 25–30 g/hL. Fine.
 | Rehydration water | 10 × yeast grams |
 | YAN target | `strain.nFactor × 10 × Brix × SG / 0.9982` (`yanTargetFromBrix()`) |
 | Yeast nFactor | per-strain (see §2a): 0.75 low / 0.9 medium / 1.25 high. No default 0.9 blanket — EC-1118, QA23, D47, K1-V1116, 71B = 0.75; RC212, D254, M05 = 0.9; VL3 = 1.25 (Laffort); Zymoferm = 0.9 (estimate) |
-| Default must YAN | rosso 150, bianco 150, idromele 5, sidro 40 |
+| Default must YAN | rosso **120**, bianco 150, idromele 5, sidro 40 — see §2b (real must survey data; all user-overridable) |
 | NUTRIENT_FACTORS | DAP 210, Fermaid-K 100, Fermaid-O 40 — each overridable in UI (mg N/g) |
 | ORGANIC_N_EFFICIENCY | 3 (Fermaid-O, non-mead only) — overridable in UI |
 | Nutrient (vino/sidro/idromele non-TOSNA) | `deficit × V / (factor × organicEff)` |

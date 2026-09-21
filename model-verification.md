@@ -3,7 +3,7 @@
 Reference values, external calculators, and worked test cases for checking the
 nutrient / bentonite / SO2 model in `index.html`.
 
-Last updated: 2026-09-17
+Last updated: 2026-09-21
 
 ---
 
@@ -85,8 +85,25 @@ target = yanTargetFromBrix(brix, og, strain.nFactor)
 abv = (OG − 1) × 131.25        (display only)
 ```
 
-`strain.nFactor` doubles as the yeast N-need multiplier `y` (0.9 medium, 0.75
-low, 1.25 would be high). No clamp.
+`strain.nFactor` doubles as the yeast N-need multiplier `y` (0.75 low, 0.9
+medium, 1.25 high). No clamp. Sources per strain in §4.
+
+### 2a. Yeast nitrogen-need multipliers (per strain, from manufacture TDS)
+
+| Strain | N-need | nFactor | Source |
+|---|---|---|---|
+| EC-1118 | Low | 0.75 | Lallemand TDS, FermCalc |
+| RC212 | Medium | 0.9 | Lallemand TDS («Medium relative nitrogen demand»), FermCalc |
+| D254 | Medium | 0.9 | FermCalc (ICV D254) |
+| QA23 | Low | 0.75 | Lallemand TDS («Very low»), FermCalc |
+| VL3 | **High** | **1.25** | **Laffort TDS (Zymaflore VL3, «High nitrogen requirements»)** — brand is Laffort, not Lalvin |
+| D47 | Low | 0.75 | FermCalc (ICV D47), Lallemand quick-ref |
+| 71B | Low | 0.75 | Lallemand TDS |
+| K1-V1116 | Low | 0.75 | Lallemand TDS, Scott Labs product page («LOW») |
+| M05 | Medium | 0.9 | Mangrove Jack's (low-to-medium → 0.9) |
+| Zymoferm Bayanus | Medium* | 0.9 | no published data — estimate |
+
+Legend: `*` = estimate, no authoritative TDS found.
 
 ### Yeast rate / rehydration
 
@@ -103,10 +120,11 @@ low, 1.25 would be high). No clamp.
 At **100 L** a Fermaid-K dose in grams equals the deficit in ppm (because factor
 = 100 and 100 L = 1 hL) — handy sanity check.
 
-### Test A — Vino rosso, 22 Brix, 100 L, medium yeast, must YAN 120
+### Test A — Vino rosso, 22 Brix, 100 L, medium yeast (y=0.9), must YAN 120
 
 - OG ≈ 1.0919 · ABV ≈ 12.07%
 - Scott/FermCalc target ≈ **216.6 ppm** → deficit **96.6 ppm**
+- NOTE: default strain EC-1118 is now Low (0.75) → target 180.5 ppm, deficit 60.5 ppm. This test pins the medium-y multiplier, not the default strain.
 
 | Nutrient | Expected g | Notes |
 |---|---|---|
@@ -115,7 +133,7 @@ At **100 L** a Fermaid-K dose in grams equals the deficit in ppm (because factor
 | Fermaid-O (app, eff 3, ÷120) | **80.4 g** | matches FermCalc to ~7% |
 | Fermaid-O (FermCalc, eff 3, ÷129) | **74.9 g** | ground truth (43 mg/g) |
 
-### Test A2 — Vino bianco, 20 Brix, 50 L, medium yeast, must YAN 150
+### Test A2 — Vino bianco, 20 Brix, 50 L, medium yeast (y=0.9), must YAN 150
 
 - OG ≈ 1.0830 · ABV ≈ 10.89%
 - FermCalc target ≈ **195.3 ppm** → deficit **45.4 ppm**
@@ -194,10 +212,10 @@ App 20–35 g/hL brackets Scott's 25–30 g/hL. Fine.
 | Yeast rate (g/L) | <1.080→0.20, <1.100→0.25, <1.120→0.30, ≥1.120→0.35 |
 | Rehydration water | 10 × yeast grams |
 | YAN target | `strain.nFactor × 10 × Brix × SG / 0.9982` (`yanTargetFromBrix()`) |
-| Yeast nFactor | 71B 0.75, others 0.9 (doubles as `y`) |
+| Yeast nFactor | per-strain (see §2a): 0.75 low / 0.9 medium / 1.25 high. No default 0.9 blanket — EC-1118, QA23, D47, K1-V1116, 71B = 0.75; RC212, D254, M05 = 0.9; VL3 = 1.25 (Laffort); Zymoferm = 0.9 (estimate) |
 | Default must YAN | rosso 150, bianco 150, idromele 5, sidro 40 |
-| NUTRIENT_FACTORS | DAP 210, Fermaid-K 100, Fermaid-O 40 |
-| ORGANIC_N_EFFICIENCY | 3 (Fermaid-O, non-mead only) |
+| NUTRIENT_FACTORS | DAP 210, Fermaid-K 100, Fermaid-O 40 — each overridable in UI (mg N/g) |
+| ORGANIC_N_EFFICIENCY | 3 (Fermaid-O, non-mead only) — overridable in UI |
 | Nutrient (vino/sidro/idromele non-TOSNA) | `deficit × V / (factor × organicEff)` |
 | Nutrient (idromele + Fermaid-O) | TOSNA: `(Brix × 10 × nFactor / 50) × (L / 3.78541)` |
 | Bentonite (g/L) | rosso 0.4, bianco 0.75, idromele 0.75, sidro 0.4 |
@@ -209,7 +227,8 @@ App 20–35 g/hL brackets Scott's 25–30 g/hL. Fine.
 
 ## 6. Open items
 
-1. Source real nitrogen-need data for wine strains (currently all default 0.9
-   except 71B).
-2. Optional: make `%N` and the efficiency factor editable in the UI.
-3. Optional: Go-Ferm rehydration nutrient (would raise efficiency 3 → 4).
+1. ~~Source real nitrogen-need data for wine strains~~ — DONE 2026-09-21 (see §2a). Only
+   Zymoferm Bayanus remains an estimate (no public TDS).
+2. ~~Make `%N` and the efficiency factor editable in the UI~~ — DONE 2026-09-21 (per-product
+   mg N/g + organic-efficiency override). Overrides are not persisted across reloads.
+3. Go-Ferm rehydration nutrient (would raise efficiency 3 → 4) — deferred (user doesn't use Go-Ferm).

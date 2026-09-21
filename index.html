@@ -186,16 +186,16 @@
     };
 
     const YEASTS = [
-      { name: "EC-1118", brand: "Lalvin", tol: 18, temp: "10\u201330\u00b0C", use: "tutti i tipi", nFactor: 0.9, note: "Universale, molto resistente, neutro" },
-      { name: "RC212", brand: "Lalvin", tol: 16, temp: "18\u201330\u00b0C", use: "rosso", nFactor: 0.9, note: "Esalta frutto rosso, tannini morbidi" },
-      { name: "D254", brand: "Lalvin", tol: 16, temp: "20\u201330\u00b0C", use: "rosso", nFactor: 0.9, note: "Rossi strutturati, note speziate" },
-      { name: "QA23", brand: "Lalvin", tol: 16, temp: "15\u201320\u00b0C", use: "bianco", nFactor: 0.9, note: "Aromi varietali, bianchi freschi" },
-      { name: "VL3", brand: "Lalvin", tol: 16, temp: "15\u201320\u00b0C", use: "bianco", nFactor: 0.9, note: "Esalta terpeni, molto aromatico" },
-      { name: "D47", brand: "Lalvin", tol: 14, temp: "15\u201325\u00b0C", use: "bianco, idromele", nFactor: 0.9, note: "Corpo/note burrose sui bianchi, preserva aromi di miele sull'idromele" },
-      { name: "71B", brand: "Lalvin", tol: 14, temp: "15\u201330\u00b0C", use: "idromele", nFactor: 0.75, note: "Ammorbidisce l'acidit\u00e0 percepita" },
-      { name: "K1-V1116", brand: "Lalvin", tol: 18, temp: "10\u201330\u00b0C", use: "idromele", nFactor: 0.9, note: "Rapido, resistente, versatile" },
-      { name: "M05", brand: "Mangrove Jack's", tol: 18, temp: "15\u201330\u00b0C", use: "idromele", nFactor: 0.9, note: "Alta produzione di esteri floreali, alta flocculazione" },
-      { name: "Zymoferm Bayanus", brand: "Chimica Franke", tol: 18, temp: "10\u201340\u00b0C", use: "rosso, bianco", nFactor: 0.9, note: "Poca schiuma, buono per riprese di fermentazione bloccata" },
+      { name: "EC-1118", brand: "Lalvin", tol: 18, temp: "10\u201330\u00b0C", use: "tutti i tipi", nFactor: 0.75, nNeed: "basso", note: "Universale, molto resistente, neutro" },
+      { name: "RC212", brand: "Lalvin", tol: 16, temp: "18\u201330\u00b0C", use: "rosso", nFactor: 0.9, nNeed: "medio", note: "Esalta frutto rosso, tannini morbidi" },
+      { name: "D254", brand: "Lalvin", tol: 16, temp: "20\u201330\u00b0C", use: "rosso", nFactor: 0.9, nNeed: "medio", note: "Rossi strutturati, note speziate" },
+      { name: "QA23", brand: "Lalvin", tol: 16, temp: "15\u201320\u00b0C", use: "bianco", nFactor: 0.75, nNeed: "basso", note: "Aromi varietali, bianchi freschi" },
+      { name: "VL3", brand: "Laffort (Zymaflore)", tol: 14.5, temp: "15\u201321\u00b0C", use: "bianco", nFactor: 1.25, nNeed: "alto", note: "Esalta terpeni/tioli del Sauvignon, richiede molti nutrienti" },
+      { name: "D47", brand: "Lalvin", tol: 14, temp: "15\u201325\u00b0C", use: "bianco, idromele", nFactor: 0.75, nNeed: "basso", note: "Corpo/note burrose sui bianchi, preserva aromi di miele sull'idromele" },
+      { name: "71B", brand: "Lalvin", tol: 14, temp: "15\u201330\u00b0C", use: "idromele", nFactor: 0.75, nNeed: "basso", note: "Ammorbidisce l'acidit\u00e0 percepita" },
+      { name: "K1-V1116", brand: "Lalvin", tol: 18, temp: "10\u201330\u00b0C", use: "idromele", nFactor: 0.75, nNeed: "basso", note: "Rapido, resistente, versatile" },
+      { name: "M05", brand: "Mangrove Jack's", tol: 18, temp: "15\u201330\u00b0C", use: "idromele", nFactor: 0.9, nNeed: "medio", note: "Alta produzione di esteri floreali, alta flocculazione" },
+      { name: "Zymoferm Bayanus", brand: "Chimica Franke", tol: 18, temp: "10\u201340\u00b0C", use: "rosso, bianco", nFactor: 0.9, nNeed: "medio", note: "Poca schiuma, buono per riprese di fermentazione bloccata" },
     ];
 
     const MOLECULAR_SO2 = { rosso: 0.5, bianco: 0.8, idromele: 0.8, sidro: 0.8 };
@@ -313,6 +313,8 @@
       const [ph, setPh] = useState(3.4);
       const [strainIndex, setStrainIndex] = useState(0);
       const [nutrientProduct, setNutrientProduct] = useState("fermaidK");
+      const [nOverride, setNOverride] = useState({ dap: "", fermaidK: "", fermaidO: "" });
+      const [effOverride, setEffOverride] = useState("");
       const [mustYanInput, setMustYanInput] = useState("");
       const [currentSO2, setCurrentSO2] = useState(0);
 
@@ -331,8 +333,10 @@
       const isMeadTosna = type === "idromele" && nutrientProduct === "fermaidO";
       const target = yanTargetFromBrix(brix, og, strain.nFactor);
       const deficit = Math.max(target - mustYan, 0);
-      const factor = NUTRIENT_FACTORS[nutrientProduct];
-      const organicEff = nutrientProduct === "fermaidO" && !isMeadTosna ? ORGANIC_N_EFFICIENCY : 1;
+      const factor = nOverride[nutrientProduct] === "" ? NUTRIENT_FACTORS[nutrientProduct] : Number(nOverride[nutrientProduct]);
+      const organicEff = nutrientProduct === "fermaidO" && !isMeadTosna
+        ? (effOverride === "" ? ORGANIC_N_EFFICIENCY : Number(effOverride))
+        : 1;
       const totalNutrientG = isMeadTosna
         ? tosnaFermaidO(brix, strain.nFactor, volume)
         : (deficit * volume) / (factor * organicEff);
@@ -412,6 +416,7 @@
                   <span>{strain.note}</span>
                   <span>Uso tipico: {strain.use}</span>
                   <span>Temperatura: {strain.temp}</span>
+                  <span>Fabbisogno azoto: {strain.nNeed}</span>
                 </div>
 
                 {tolExceeded && (
@@ -437,6 +442,20 @@
                         <option value="dap">DAP</option>
                       </Select>
                     </Field>
+
+                    <Field label="Azoto nel prodotto" hint={`mg N per g - default ${NUTRIENT_FACTORS[nutrientProduct]}`}>
+                      <NumInput value={nOverride[nutrientProduct]} placeholder={String(NUTRIENT_FACTORS[nutrientProduct])}
+                        min={0} step={5}
+                        onChange={(e) => setNOverride({ ...nOverride, [nutrientProduct]: e.target.value })} />
+                    </Field>
+
+                    {nutrientProduct === "fermaidO" && !isMeadTosna && (
+                      <Field label="Efficienza N organico" hint={`x - default ${ORGANIC_N_EFFICIENCY}`}>
+                        <NumInput value={effOverride} placeholder={String(ORGANIC_N_EFFICIENCY)}
+                          min={1} step={0.5}
+                          onChange={(e) => setEffOverride(e.target.value)} />
+                      </Field>
+                    )}
 
                     <Field label="YAN già presente nel mosto" hint={`mg N/L - default ${DEFAULT_YAN[type]}`}>
                       <NumInput value={mustYanInput} placeholder={String(DEFAULT_YAN[type])}

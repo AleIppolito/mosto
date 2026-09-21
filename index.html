@@ -177,10 +177,9 @@
       sidro: "0.2\u20131.0 g/L",
     };
 
-    const NUTRIENT_FACTORS = { dap: 210, fermaidK: 100, fermaidO: 40 };
+    const NUTRIENT_FACTORS = { fermaidK: 100, fermaidO: 40 };
     const ORGANIC_N_EFFICIENCY = 3;
     const NUTRIENT_LABELS = {
-      dap: "DAP (fosfato biammonico)",
       fermaidK: "Fermaid-K",
       fermaidO: "Fermaid-O",
     };
@@ -313,7 +312,7 @@
       const [ph, setPh] = useState(3.4);
       const [strainIndex, setStrainIndex] = useState(0);
       const [nutrientProduct, setNutrientProduct] = useState("fermaidK");
-      const [nOverride, setNOverride] = useState({ dap: "", fermaidK: "", fermaidO: "" });
+      const [nOverride, setNOverride] = useState({ fermaidK: "", fermaidO: "" });
       const [effOverride, setEffOverride] = useState("");
       const [mustYanInput, setMustYanInput] = useState("");
       const [currentSO2, setCurrentSO2] = useState(0);
@@ -444,7 +443,6 @@
                         onChange={(e) => setNutrientProduct(e.target.value)}>
                         <option value="fermaidK">Fermaid-K</option>
                         <option value="fermaidO">Fermaid-O</option>
-                        <option value="dap">DAP</option>
                       </Select>
                     </Field>
 
@@ -523,12 +521,6 @@
                         ? `TOSNA · Brix ${brix.toFixed(1)} · fattore azoto lievito ${strain.nFactor}`
                         : `YAN mosto ${mustYan} mg/L · deficit ${deficit.toFixed(0)} mg/L · ${NUTRIENT_LABELS[nutrientProduct]}${organicEff > 1 ? ` · efficienza azoto organico x${organicEff}` : ""}`}
                     </p>
-                    {nutrientProduct === "dap" && (
-                      <p style={{ fontSize: 12, marginTop: 8, color: "#726A5C" }}>
-                        DAP può favorire off-flavor solforati: se possibile usa un prodotto organico
-                        o semi-organico come Fermaid-K o Fermaid-O.
-                      </p>
-                    )}
                   </Section>
 
                   <Section icon={Filter} title="Bentonite" accent={accent}>

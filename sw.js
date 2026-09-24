@@ -1,4 +1,4 @@
-const CACHE = 'mosto-v1';
+const CACHE = 'mosto-v2';
 const ASSETS = [
   './',
   'index.html',

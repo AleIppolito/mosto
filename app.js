@@ -330,8 +330,8 @@ const YEASTS = [{
   tol: 18,
   temp: "10\u201340\u00b0C",
   use: "rosso, bianco, sidro",
-  nFactor: 0.9,
-  nNeed: "medio",
+  nFactor: 0.75,
+  nNeed: "basso",
   note: "Poca schiuma, buono per riprese di fermentazione bloccata"
 }];
 const MOLECULAR_SO2 = {
